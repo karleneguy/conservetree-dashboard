@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Making Oxygen Therapy Visible Dashboard Embed</title>
+<style>
+:root {
+  --navy:#082b63; --navy2:#0f3d82; --blue:#2f6fc2; --light:#f5f8fc; --card:#ffffff; --line:#dbe5f1;
+  --teal:#11a7a2; --green:#15a05f; --bronze:#b56b2a; --silver:#8d99a6; --gold:#dfa300;
+}
+* { box-sizing:border-box; }
+html { width:100%; min-height:100%; }
+body { margin:0; background:var(--light); font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#0c2454; }
+.dashboard { width:100%; max-width:1680px; margin:0 auto; padding:14px; }
+.header { height:96px; border-radius:10px; background:linear-gradient(135deg,#05245a,#07306c 45%,#062556); color:white; display:flex; align-items:center; justify-content:space-between; padding:22px 36px; box-shadow:0 6px 18px rgba(6,37,86,.18); }
+.brand { display:flex; align-items:center; gap:22px; }
+.logo { width:78px; height:70px; }
+.title h1 { margin:0; font-size:40px; letter-spacing:-1px; }
+.title p { margin:2px 0 0; font-size:24px; color:#9be6ff; font-weight:650; }
+.pill { background:#48d6d0; color:#04314a; border-radius:24px; padding:12px 24px; font-weight:800; }
+.grid { display:grid; gap:12px; }
+.kpis { grid-template-columns: 1fr 1fr 1.2fr 1fr 1.2fr; margin-top:14px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:0 3px 10px rgba(12,36,84,.08); }
+.kpi { display:flex; align-items:center; gap:22px; padding:22px; min-height:145px; }
+.icon { width:72px; height:72px; border-radius:50%; display:grid; place-items:center; background:#e6f1ff; font-size:34px; }
+.kpi-title { font-weight:800; font-size:16px; line-height:1.2; margin-bottom:8px; }
+.big { font-size:46px; font-weight:850; color:#143d83; letter-spacing:-1px; }
+.site-split { display:grid; grid-template-columns:1fr 1fr 1fr; width:100%; text-align:center; gap:0; }
+.site-split > div { border-left:1px solid #cad7e8; } .site-split > div:first-child { border-left:0; }
+.medal { font-size:27px; } .bronze { color:var(--bronze); } .silver { color:var(--silver); } .gold { color:var(--gold); }
+.main { grid-template-columns: 1.05fr 1fr; margin-top:12px; }
+.panel { padding:18px 22px; min-height:390px; position:relative; overflow:hidden; }
+.panel h2 { font-size:18px; margin:0 0 10px; }
+.map-wrap { position:relative; height:325px; }
+svg { width:100%; height:100%; display:block; }
+.province { stroke:#fff; stroke-width:3; cursor:pointer; transition:.15s ease; }
+.province:hover, .province.active { stroke:#0b2f70; stroke-width:4; filter:drop-shadow(0 4px 8px rgba(8,43,99,.25)); }
+.map-label { fill:#0d2c66; font-size:16px; font-weight:800; pointer-events:none; }
+.tooltip { position:absolute; left:270px; top:78px; width:290px; background:white; border:1px solid #c7d6e9; border-radius:9px; padding:14px 16px; box-shadow:0 14px 30px rgba(12,36,84,.22); z-index:3; font-size:13px; }
+.tooltip h3 { margin:0 0 10px; font-size:17px; color:#092960; }
+.row { display:flex; justify-content:space-between; gap:15px; margin:5px 0; }
+.row b { color:#0b2f70; }
+.legend { position:absolute; left:25px; bottom:18px; font-size:12px; }
+.gradient { height:14px; width:150px; border-radius:2px; background:linear-gradient(90deg,#d8e8ff,#1c58a6); margin:4px 0; }
+.bar-row { display:grid; grid-template-columns: 28px 195px 1fr 42px; align-items:center; gap:10px; margin:9px 0; font-size:14px; }
+.rank { width:18px; height:18px; border-radius:50%; background:#1c5ca8; color:white; display:grid; place-items:center; font-size:11px; font-weight:800; }
+.bar-bg { height:14px; background:#eff4fb; border-radius:7px; overflow:hidden; }
+.bar { height:100%; background:linear-gradient(90deg,#2d66b4,#164a9a); border-radius:7px; }
+.bottom { grid-template-columns: repeat(5, 1fr) 2fr 1.65fr; margin-top:12px; align-items:stretch; }
+.metric-card { min-height:205px; padding:18px 15px; }
+.small-title { font-weight:800; font-size:13px; line-height:1.2; min-height:38px; }
+.metric-card .big2 { margin-top:20px; font-size:27px; font-weight:850; color:var(--teal); }
+.delta { color:var(--green); font-weight:800; margin-top:10px; font-size:13px; }
+.spark { height:46px; margin-top:12px; }
+.chart-panel { min-height:205px; padding:16px 18px; }
+.line-svg { height:150px; }
+.donut-wrap { display:flex; align-items:center; gap:20px; justify-content:center; height:160px; }
+.donut { width:150px; height:150px; border-radius:50%; background:conic-gradient(var(--bronze) 0 54%, var(--silver) 54% 83%, var(--gold) 83% 100%); position:relative; display:grid; place-items:center; }
+.donut:after { content:""; position:absolute; width:76px; height:76px; border-radius:50%; background:white; }
+.donut-center { position:relative; z-index:2; text-align:center; font-weight:850; color:#143d83; font-size:18px; line-height:1.1; }
+.donut-center span { display:block; font-size:11px; }
+.legend-list { font-size:14px; line-height:1.8; }
+.dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:8px; }
+.footer-note { font-size:12px; color:#62708d; margin-top:10px; }
+@media (max-width:1100px) { .kpis,.main,.bottom { grid-template-columns:1fr; } .header { height:auto; flex-wrap:wrap; gap:16px; } .title h1 { font-size:30px; } .title p { font-size:18px; } .tooltip { left:24px; top:70px; width:min(290px, calc(100% - 48px)); } }
+@media (max-width:640px) { .dashboard { padding:8px; } .header { padding:18px; } .brand { gap:12px; } .logo { width:58px; height:52px; } .title h1 { font-size:24px; } .pill { padding:8px 14px; } .kpi { min-height:auto; padding:16px; } .big { font-size:36px; } .panel { padding:14px; } .map-wrap { height:300px; } .bar-row { grid-template-columns:24px 150px 1fr 36px; font-size:12px; } }
+@media print { .dashboard { max-width:none; padding:0; } .card { break-inside:avoid; } }
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <header class="header">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 100 80" aria-hidden="true"><path d="M23 62C12 62 6 55 6 45c0-9 7-16 16-16 3-13 14-22 27-22 16 0 28 12 29 28 10 1 17 8 17 18 0 11-8 19-20 19H23z" fill="none" stroke="#9be6ff" stroke-width="6" stroke-linecap="round"/><text x="25" y="57" fill="white" font-size="32" font-weight="800">O₂</text><path d="M74 58c8-13 15-12 20-11-2 8-7 14-19 17" fill="#49d26b"/></svg>
+      <div class="title"><h1>Making Oxygen Therapy Visible</h1><p>Program Dashboard</p></div>
+    </div><div class="pill">Demo data</div>
+  </header>
+
+  <section class="grid kpis">
+    <div class="card kpi"><div class="icon">👥</div><div><div class="kpi-title">Trained Clinicians</div><div class="big" id="kpi-trained"></div></div></div>
+    <div class="card kpi"><div class="icon">⭐</div><div><div class="kpi-title">Clinical Champions</div><div class="big" id="kpi-champions"></div></div></div>
+    <div class="card kpi" style="display:block"><div class="kpi-title" style="text-align:center">Visible Oxygen Care Sites</div><div class="site-split"><div><div class="medal bronze">⬟</div><div>Bronze</div><div class="big bronze" style="font-size:30px" id="kpi-bronze"></div></div><div><div class="medal silver">⬟</div><div>Silver</div><div class="big silver" style="font-size:30px" id="kpi-silver"></div></div><div><div class="medal gold">⬟</div><div>Gold</div><div class="big gold" style="font-size:30px" id="kpi-gold"></div></div></div></div>
+    <div class="card kpi"><div class="icon">🏥</div><div><div class="kpi-title">Hospitals with<br>Conserve Tree</div><div class="big" id="kpi-hospitals"></div></div></div>
+    <div class="card kpi"><div class="icon" style="background:#dcf7f4">🌳</div><div><div class="kpi-title">Conserve Trees /<br>Acute Care Spaces<br>Retrofitted</div><div class="big" id="kpi-trees"></div></div></div>
+  </section>
+
+  <section class="grid main">
+    <div class="card panel"><h2>Clinical Champions by Province/Territory ⓘ</h2><div class="map-wrap"><svg viewBox="0 0 1000 460" id="mapSvg"></svg><div class="tooltip" id="tooltip"></div><div class="legend"><b>Clinical Champions</b><div class="gradient"></div><div style="display:flex;justify-content:space-between;width:150px"><span>0</span><span>80+</span></div></div></div><div class="footer-note">Stylized Canada heat map for dashboard prototyping. Use Looker Studio’s geo chart or Google Maps layer for production geography.</div></div>
+    <div class="card panel"><h2>Clinical Champions by Province</h2><div id="bars"></div></div>
+  </section>
+
+  <section class="grid bottom">
+    <div class="card metric-card"><div class="small-title">Earlier Nursing<br>Intervention Events</div><div class="big2" id="m-interventions"></div><div class="delta">↑ 18% vs prior period</div><svg class="spark" data-seed="1"></svg></div>
+    <div class="card metric-card"><div class="small-title">Rapid Response Team<br>Activation Events</div><div class="big2" id="m-rrt"></div><div class="delta">↓ 12% vs prior period</div><svg class="spark" data-seed="2"></svg></div>
+    <div class="card metric-card"><div class="small-title">Nursing Hours Saved</div><div class="big2" id="m-hours-saved"></div><div class="delta">↑ 22% vs prior period</div><svg class="spark" data-seed="3"></svg></div>
+    <div class="card metric-card"><div class="small-title">Total Hours Monitored</div><div class="big2" style="color:#143d83" id="m-hours"></div><div class="delta">↑ 16% vs prior period</div><svg class="spark" data-seed="4"></svg></div>
+    <div class="card metric-card"><div class="small-title">Patients Monitored</div><div class="big2" style="color:#143d83" id="m-patients"></div><div class="delta">↑ 20% vs prior period</div><svg class="spark" data-seed="5"></svg></div>
+    <div class="card chart-panel"><h2>Patients Monitored Over Time</h2><svg class="line-svg" id="lineChart" viewBox="0 0 460 155"></svg></div>
+    <div class="card chart-panel"><h2>Visible Oxygen Care Site Status</h2><div class="donut-wrap"><div class="donut"><div class="donut-center">333<span>Total Sites</span></div></div><div class="legend-list"><div><span class="dot" style="background:var(--bronze)"></span>Bronze <b>182 (54%)</b></div><div><span class="dot" style="background:var(--silver)"></span>Silver <b>97 (29%)</b></div><div><span class="dot" style="background:var(--gold)"></span>Gold <b>54 (17%)</b></div></div></div></div>
+  </section>
+</div>
+<script>
+const DATA = [{"province": "Ontario", "code": "ON", "trained": 1240, "champions": 92, "bronze": 45, "silver": 25, "gold": 15, "trees": 340, "hospitals": 38, "interventions": 570, "rrt": 270, "hours_saved": 1375, "hours_monitored": 16200, "patients": 3100}, {"province": "British Columbia", "code": "BC", "trained": 810, "champions": 64, "bronze": 32, "silver": 17, "gold": 10, "trees": 220, "hospitals": 24, "interventions": 390, "rrt": 185, "hours_saved": 960, "hours_monitored": 11600, "patients": 2200}, {"province": "Alberta", "code": "AB", "trained": 712, "champions": 58, "bronze": 28, "silver": 15, "gold": 8, "trees": 214, "hospitals": 18, "interventions": 340, "rrt": 170, "hours_saved": 830, "hours_monitored": 9800, "patients": 1850}, {"province": "Quebec", "code": "QC", "trained": 640, "champions": 46, "bronze": 24, "silver": 13, "gold": 7, "trees": 160, "hospitals": 20, "interventions": 310, "rrt": 150, "hours_saved": 740, "hours_monitored": 9000, "patients": 1700}, {"province": "Manitoba", "code": "MB", "trained": 340, "champions": 26, "bronze": 12, "silver": 6, "gold": 3, "trees": 80, "hospitals": 9, "interventions": 145, "rrt": 70, "hours_saved": 360, "hours_monitored": 4300, "patients": 800}, {"province": "Saskatchewan", "code": "SK", "trained": 300, "champions": 24, "bronze": 10, "silver": 6, "gold": 3, "trees": 75, "hospitals": 8, "interventions": 135, "rrt": 65, "hours_saved": 330, "hours_monitored": 3900, "patients": 740}, {"province": "Nova Scotia", "code": "NS", "trained": 240, "champions": 18, "bronze": 9, "silver": 4, "gold": 2, "trees": 55, "hospitals": 8, "interventions": 110, "rrt": 55, "hours_saved": 270, "hours_monitored": 3200, "patients": 600}, {"province": "New Brunswick", "code": "NB", "trained": 185, "champions": 14, "bronze": 7, "silver": 3, "gold": 2, "trees": 40, "hospitals": 6, "interventions": 85, "rrt": 42, "hours_saved": 210, "hours_monitored": 2500, "patients": 460}, {"province": "Newfoundland & Labrador", "code": "NL", "trained": 150, "champions": 10, "bronze": 5, "silver": 3, "gold": 1, "trees": 35, "hospitals": 5, "interventions": 75, "rrt": 38, "hours_saved": 185, "hours_monitored": 2200, "patients": 420}, {"province": "Prince Edward Island", "code": "PE", "trained": 90, "champions": 6, "bronze": 3, "silver": 2, "gold": 1, "trees": 20, "hospitals": 3, "interventions": 40, "rrt": 20, "hours_saved": 100, "hours_monitored": 1200, "patients": 220}, {"province": "Northwest Territories", "code": "NT", "trained": 45, "champions": 4, "bronze": 3, "silver": 1, "gold": 1, "trees": 18, "hospitals": 3, "interventions": 42, "rrt": 25, "hours_saved": 130, "hours_monitored": 1500, "patients": 260}, {"province": "Yukon", "code": "YT", "trained": 30, "champions": 3, "bronze": 2, "silver": 1, "gold": 0, "trees": 14, "hospitals": 2, "interventions": 34, "rrt": 20, "hours_saved": 120, "hours_monitored": 1500, "patients": 250}, {"province": "Nunavut", "code": "NU", "trained": 30, "champions": 3, "bronze": 2, "silver": 1, "gold": 1, "trees": 13, "hospitals": 2, "interventions": 80, "rrt": 18, "hours_saved": 132, "hours_monitored": 1532, "patients": 246}];
+const MONTHLY = [{"month": "Nov '23", "patients": 9284, "hours": 48700, "hours_saved": 4010, "interventions": 1740, "rrt": 890}, {"month": "Dec '23", "patients": 9865, "hours": 51230, "hours_saved": 4300, "interventions": 1850, "rrt": 950}, {"month": "Jan '24", "patients": 10742, "hours": 55800, "hours_saved": 4680, "interventions": 1980, "rrt": 1010}, {"month": "Feb '24", "patients": 11241, "hours": 59100, "hours_saved": 4980, "interventions": 2090, "rrt": 1060}, {"month": "Mar '24", "patients": 11987, "hours": 63220, "hours_saved": 5300, "interventions": 2225, "rrt": 1105}, {"month": "Apr '24", "patients": 12846, "hours": 68432, "hours_saved": 5742, "interventions": 2356, "rrt": 1128}];
+const TILES = {"YT": [45, 70, 110, 115], "NT": [170, 65, 160, 120], "NU": [350, 45, 270, 150], "BC": [75, 205, 135, 185], "AB": [225, 205, 115, 185], "SK": [355, 215, 110, 175], "MB": [480, 220, 115, 165], "ON": [610, 240, 165, 145], "QC": [760, 205, 165, 155], "NL": [880, 115, 95, 85], "NB": [855, 330, 70, 55], "NS": [930, 365, 60, 45], "PE": [910, 310, 42, 28]};
+const fmt = n => Number(n).toLocaleString('en-CA');
+const total = key => DATA.reduce((a,b)=>a+b[key],0);
+['trained','champions','bronze','silver','gold','trees','hospitals'].forEach(k => document.getElementById('kpi-'+k).textContent = fmt(total(k)));
+document.getElementById('m-interventions').textContent = fmt(total('interventions'));
+document.getElementById('m-rrt').textContent = fmt(total('rrt'));
+document.getElementById('m-hours-saved').textContent = fmt(total('hours_saved'));
+document.getElementById('m-hours').textContent = fmt(total('hours_monitored'));
+document.getElementById('m-patients').textContent = fmt(total('patients'));
+function fillColor(v) { const max=92; const t=Math.min(1,v/max); const l=91-(t*43); return `hsl(214 75% ${l}%)`; }
+function tooltipHTML(d) { return `<h3>${d.province}</h3><div class="row"><span>Trained Clinicians</span><b>${fmt(d.trained)}</b></div><div class="row"><span>Clinical Champions</span><b>${fmt(d.champions)}</b></div><hr><b>Visible Oxygen Care Sites</b><div class="row"><span>● Bronze</span><b>${d.bronze}</b></div><div class="row"><span>● Silver</span><b>${d.silver}</b></div><div class="row"><span>● Gold</span><b>${d.gold}</b></div><hr><div class="row"><span>Conserve Trees / Acute Care Spaces Retrofitted</span><b>${fmt(d.trees)}</b></div><div class="row"><span>Hospitals with Conserve Tree</span><b>${fmt(d.hospitals)}</b></div>`; }
+const svg = document.getElementById('mapSvg'); const tip = document.getElementById('tooltip');
+DATA.forEach(d => {
+  const [x,y,w,h] = TILES[d.code];
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  const r = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  r.setAttribute('x',x); r.setAttribute('y',y); r.setAttribute('width',w); r.setAttribute('height',h); r.setAttribute('rx',16); r.setAttribute('fill',fillColor(d.champions)); r.setAttribute('class','province');
+  const tx = document.createElementNS('http://www.w3.org/2000/svg','text'); tx.setAttribute('x',x+w/2); tx.setAttribute('y',y+h/2+5); tx.setAttribute('text-anchor','middle'); tx.setAttribute('class','map-label'); tx.textContent = d.code;
+  g.appendChild(r); g.appendChild(tx); svg.appendChild(g);
+  g.addEventListener('mouseenter',()=>{ tip.innerHTML=tooltipHTML(d); document.querySelectorAll('.province').forEach(p=>p.classList.remove('active')); r.classList.add('active'); });
+  g.addEventListener('click',()=>{ tip.innerHTML=tooltipHTML(d); });
+});
+tip.innerHTML = tooltipHTML(DATA.find(d=>d.code==='AB'));
+const sorted = [...DATA].sort((a,b)=>b.champions-a.champions);
+document.getElementById('bars').innerHTML = sorted.map((d,i)=>`<div class="bar-row"><div class="rank">${i+1}</div><div>${d.province}</div><div class="bar-bg"><div class="bar" style="width:${d.champions/100*100}%"></div></div><b>${d.champions}</b></div>`).join('');
+function drawSpark(el, seed) { let pts=[]; for(let i=0;i<13;i++){ pts.push(15 + Math.abs(Math.sin((i+seed)/2))*18 + (i*1.2) + ((i*seed)%7)); } const w=150,h=46; const path=pts.map((p,i)=>`${i?'L':'M'}${(i/(pts.length-1)*w).toFixed(1)} ${(h-p).toFixed(1)}`).join(' '); el.setAttribute('viewBox',`0 0 ${w} ${h}`); el.innerHTML=`<path d="${path}" fill="none" stroke="#13a7a3" stroke-width="3"/><path d="${path} L ${w} ${h} L 0 ${h} Z" fill="#d7f5f2" opacity=".7"/>`; }
+document.querySelectorAll('.spark').forEach(s=>drawSpark(s, Number(s.dataset.seed)));
+function drawLine() { const el=document.getElementById('lineChart'); const w=430,h=120,l=35,t=8; const vals=MONTHLY.map(m=>m.patients); const min=8500,max=13200; const x=i=>l+i*(w-l-12)/(vals.length-1); const y=v=>t+(max-v)/(max-min)*(h-t-18); const path=vals.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' '); let grid=''; for(let k=0;k<4;k++){ let yy=t+k*28; grid+=`<line x1="${l}" y1="${yy}" x2="${w}" y2="${yy}" stroke="#e5edf7"/>`; } let labels=MONTHLY.map((m,i)=>`<text x="${x(i)}" y="150" font-size="11" text-anchor="middle" fill="#263b61">${m.month}</text><circle cx="${x(i)}" cy="${y(m.patients)}" r="4" fill="#1456a6"/><text x="${x(i)}" y="${y(m.patients)-9}" font-size="10" text-anchor="middle" fill="#0c2454">${fmt(m.patients)}</text>`).join(''); el.innerHTML=grid+`<path d="${path}" fill="none" stroke="#1456a6" stroke-width="3"/>`+labels; }
+drawLine();
+</script>
+
+<script>
+(function(){
+  function sendDashboardHeight(){
+    try {
+      var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      window.parent.postMessage({ type: 'oxygen-dashboard-height', height: h }, '*');
+    } catch(e) {}
+  }
+  window.addEventListener('load', sendDashboardHeight);
+  window.addEventListener('resize', sendDashboardHeight);
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(sendDashboardHeight).observe(document.body);
+  } else {
+    setInterval(sendDashboardHeight, 1000);
+  }
+})();
+</script>
+</body>
+</html>
